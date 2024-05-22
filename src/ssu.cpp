@@ -4,6 +4,20 @@
 #include <QDBusPendingReply>
 #include <QDebug>
 
+#if SAILFISHOS_VERSION >= 40600
+static QString s_repo_regular(
+        QStringLiteral("https://repo.sailfishos.org/obs/sailfishos:/chum/%(releaseMajorMinor)_%(arch)/"));
+static QString s_repo_regular_alias(
+        QStringLiteral("sailfishos-chum"));
+static QString s_repo_regular_prefix(
+        QStringLiteral("https://repo.sailfishos.org/obs/sailfishos:/chum/"));
+static QString s_repo_testing(
+        QStringLiteral("https://repo.sailfishos.org/obs/sailfishos:/chum:/testing/%(releaseMajorMinor)_%(arch)/"));
+static QString s_repo_testing_alias(
+        QStringLiteral("sailfishos-chum-testing"));
+static QString s_repo_testing_prefix(
+        QStringLiteral("https://repo.sailfishos.org/obs/sailfishos:/chum:/testing/"));
+#else
 static QString s_repo_regular(
         QStringLiteral("https://repo.sailfishos.org/obs/sailfishos:/chum/%(release)_%(arch)/"));
 static QString s_repo_regular_alias(
@@ -16,6 +30,7 @@ static QString s_repo_testing_alias(
         QStringLiteral("sailfishos-chum-testing"));
 static QString s_repo_testing_prefix(
         QStringLiteral("https://repo.sailfishos.org/obs/sailfishos:/chum:/testing/"));
+#endif
 
 Ssu::Ssu(QObject *parent) :
     QDBusAbstractInterface(
@@ -131,7 +146,11 @@ void Ssu::setRepo(const QString &version, bool testing) {
     QString url = testing ? s_repo_testing : s_repo_regular;
 
     if (!version.isEmpty()) {
+#if SAILFISHOS_VERSION >= 40600
+        url = url.replace(QLatin1String("%(releaseMajorMinor)"), version);
+#else
         url = url.replace(QLatin1String("%(release)"), version);
+#endif
     }
 
     if (rname != m_repo_name) {
