@@ -98,7 +98,8 @@ Links:
        -DGITHUB_TOKEN=%(cat %{SOURCE1})  \
        -DGITLAB_TOKEN=%(cat %{SOURCE2})  \
        -DFORGEJO_TOKEN=%(cat %{SOURCE3})  \
-       .
+      .-DSAILFISHOS_VERSION=%{sailfishos_version}  \
+
 cmake --build .
 
 %install
